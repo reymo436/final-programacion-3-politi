@@ -1,0 +1,96 @@
+// turnos-backend/routes/usuarios.js
+const express = require('express');
+const router = express.Router();
+const pool = require('../db');
+
+// Listar usuarios
+router.get('/', async (req, res) => {
+  try {
+    const [rows] = await pool.query(
+      `SELECT id, nombre, email FROM usuarios ORDER BY id ASC`
+    );
+    res.json(rows);
+  } catch (err) {
+    console.error(err);
+    res.status(500).json({ error: 'error al obtener usuarios' });
+  }
+});
+
+// Obtener 1 usuario por ID
+router.get('/:id', async (req, res) => {
+  try {
+    const [rows] = await pool.query(
+      `SELECT id, nombre, email FROM usuarios WHERE id = ?`,
+      [req.params.id]
+    );
+    if (!rows.length) return res.status(404).json({ error: 'usuario no encontrado' });
+    res.json(rows[0]);
+  } catch (err) {
+    console.error(err);
+    res.status(500).json({ error: 'error al obtener usuario' });
+  }
+});
+
+// Crear usuario
+router.post('/', async (req, res) => {
+  try {
+    const { nombre, email, password } = req.body;
+    if (!nombre || !email || !password) {
+      return res.status(400).json({ error: 'nombre, email y password son requeridos' });
+    }
+
+    const [result] = await pool.query(
+      `INSERT INTO usuarios (nombre, email, password) VALUES (?, ?, ?)`,
+      [nombre, email, password]
+    );
+
+    const [rows] = await pool.query(
+      `SELECT id, nombre, email FROM usuarios WHERE id = ?`,
+      [result.insertId]
+    );
+
+    res.status(201).json(rows[0]);
+  } catch (err) {
+    console.error(err);
+    res.status(500).json({ error: 'error al crear usuario' });
+  }
+});
+
+// Actualizar usuario
+router.put('/:id', async (req, res) => {
+  try {
+    const { nombre, email, password } = req.body;
+    await pool.query(
+      `UPDATE usuarios SET nombre = ?, email = ?, password = ? WHERE id = ?`,
+      [nombre, email, password, req.params.id]
+    );
+
+    const [rows] = await pool.query(
+      `SELECT id, nombre, email FROM usuarios WHERE id = ?`,
+      [req.params.id]
+    );
+
+    if (!rows.length) return res.status(404).json({ error: 'usuario no encontrado' });
+    res.json(rows[0]);
+  } catch (err) {
+    console.error(err);
+    res.status(500).json({ error: 'error al actualizar usuario' });
+  }
+});
+
+// Eliminar usuario
+router.delete('/:id', async (req, res) => {
+  try {
+    const [result] = await pool.query(
+      `DELETE FROM usuarios WHERE id = ?`,
+      [req.params.id]
+    );
+    if (result.affectedRows === 0) return res.status(404).json({ error: 'usuario no encontrado' });
+    res.json({ message: 'usuario eliminado' });
+  } catch (err) {
+    console.error(err);
+    res.status(500).json({ error: 'error al eliminar usuario' });
+  }
+});
+
+module.exports = router;

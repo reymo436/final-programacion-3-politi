@@ -1,6 +1,15 @@
+// turnos-backend/db.js
+require('dotenv').config();
+const mysql = require('mysql2/promise');
+
 const pool = mysql.createPool({
-  host: 'localhost',
-  user: 'root',         
-  password: '123456789',         
-  database: 'turnos_db'
+  host: process.env.DB_HOST || 'localhost',
+  user: process.env.DB_USER || 'root',
+  password: process.env.DB_PASSWORD || '',
+  database: process.env.DB_NAME || 'turnos_db',
+  port: process.env.DB_PORT || 3306,
+  waitForConnections: true,
+  connectionLimit: 10
 });
+
+module.exports = pool;
