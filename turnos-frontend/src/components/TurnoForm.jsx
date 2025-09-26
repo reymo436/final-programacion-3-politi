@@ -13,7 +13,13 @@ function TurnoForm({ onAddTurno }) {
       return;
     }
 
-    const nuevoTurno = { nombre, fecha, hora };
+    const nuevoTurno = { 
+      nombre_cliente: nombre, 
+      fecha, 
+      hora, 
+      estado: "pendiente" 
+    };
+
     onAddTurno(nuevoTurno);
 
     setNombre("");
@@ -24,7 +30,7 @@ function TurnoForm({ onAddTurno }) {
   return (
     <form onSubmit={handleSubmit} style={{ marginBottom: "20px" }}>
       <div>
-        <label>Nombre:</label>
+        <label>Nombre Cliente:</label>
         <input
           type="text"
           value={nombre}
