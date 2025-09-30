@@ -1,21 +1,45 @@
+// src/App.jsx
 import { useState, useEffect } from "react";
 import TurnoForm from "./components/TurnoForm";
 import TurnoList from "./components/TurnoList";
 import TurnoEditForm from "./components/TurnoEditForm";
+import LoginForm from "./components/LoginForm";
 
 function App() {
   const [turnos, setTurnos] = useState([]);
   const [turnoEditando, setTurnoEditando] = useState(null);
+  const [usuario, setUsuario] = useState(null);
 
-  // Cargar turnos al iniciar
+  // 🔹 Cargar usuario desde localStorage al iniciar
   useEffect(() => {
-    fetch("http://localhost:4000/api/turnos")
-      .then((res) => res.json())
-      .then((data) => setTurnos(data))
-      .catch((err) => console.error("Error cargando turnos:", err));
+    const savedUser = localStorage.getItem("usuario");
+    if (savedUser) setUsuario(JSON.parse(savedUser));
   }, []);
 
-  // Agregar turno
+  // 🔹 Cargar turnos solo si hay usuario logueado
+  useEffect(() => {
+    if (usuario) {
+      fetch("http://localhost:4000/api/turnos")
+        .then((res) => res.json())
+        .then((data) => setTurnos(data))
+        .catch((err) => console.error("Error cargando turnos:", err));
+    }
+  }, [usuario]);
+
+  // 🔹 Login exitoso
+  const handleLogin = (user) => {
+    setUsuario(user);
+    localStorage.setItem("usuario", JSON.stringify(user));
+  };
+
+  // 🔹 Cerrar sesión
+  const handleLogout = () => {
+    setUsuario(null);
+    localStorage.removeItem("usuario");
+    setTurnos([]); // limpiar turnos al cerrar sesión
+  };
+
+  // 🔹 Agregar turno
   const handleAddTurno = async (nuevoTurno) => {
     try {
       const response = await fetch("http://localhost:4000/api/turnos", {
@@ -30,7 +54,7 @@ function App() {
     }
   };
 
-  // Eliminar turno
+  // 🔹 Eliminar turno
   const handleDeleteTurno = async (id) => {
     try {
       await fetch(`http://localhost:4000/api/turnos/${id}`, {
@@ -42,12 +66,12 @@ function App() {
     }
   };
 
-  // Iniciar edición
+  // 🔹 Iniciar edición
   const handleEditTurno = (turno) => {
     setTurnoEditando(turno);
   };
 
-  // Guardar turno editado
+  // 🔹 Guardar turno editado
   const handleSaveEdit = async (turnoEditado) => {
     try {
       const response = await fetch(
@@ -68,23 +92,32 @@ function App() {
 
   return (
     <div style={{ padding: "20px" }}>
-      <h1>Gestión de Turnos</h1>
-
-      {turnoEditando ? (
-        <TurnoEditForm
-          turno={turnoEditando}
-          onSave={handleSaveEdit}
-          onCancel={() => setTurnoEditando(null)}
-        />
+      {!usuario ? (
+        <LoginForm onLogin={handleLogin} />
       ) : (
-        <TurnoForm onAddTurno={handleAddTurno} />
-      )}
+        <>
+          <h1>Gestión de Turnos</h1>
+          <div className="user-header">
+          <span className="user-info">👤 {usuario.nombre}</span>
+          <button onClick={handleLogout}>Cerrar Sesión</button>
+          </div>
+          {turnoEditando ? (
+            <TurnoEditForm
+              turno={turnoEditando}
+              onSave={handleSaveEdit}
+              onCancel={() => setTurnoEditando(null)}
+            />
+          ) : (
+            <TurnoForm onAddTurno={handleAddTurno} />
+          )}
 
-      <TurnoList
-        turnos={turnos}
-        onDeleteTurno={handleDeleteTurno}
-        onEditTurno={handleEditTurno}
-      />
+          <TurnoList
+            turnos={turnos}
+            onDeleteTurno={handleDeleteTurno}
+            onEditTurno={handleEditTurno}
+          />
+        </>
+      )}
     </div>
   );
 }

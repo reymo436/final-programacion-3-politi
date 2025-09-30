@@ -3,7 +3,7 @@ const express = require('express');
 const router = express.Router();
 const pool = require('../db');
 
-// Listar usuarios
+// Listar usuarios (sin password)
 router.get('/', async (req, res) => {
   try {
     const [rows] = await pool.query(
@@ -16,7 +16,7 @@ router.get('/', async (req, res) => {
   }
 });
 
-// Obtener 1 usuario por ID
+// Obtener 1 usuario por ID (sin password)
 router.get('/:id', async (req, res) => {
   try {
     const [rows] = await pool.query(
@@ -90,6 +90,28 @@ router.delete('/:id', async (req, res) => {
   } catch (err) {
     console.error(err);
     res.status(500).json({ error: 'error al eliminar usuario' });
+  }
+});
+
+// 🔑 Login
+router.post('/login', async (req, res) => {
+  try {
+    const { email, password } = req.body;
+    if (!email || !password) {
+      return res.status(400).json({ error: 'email y password requeridos' });
+    }
+
+    const [rows] = await pool.query(
+      `SELECT id, nombre, email FROM usuarios WHERE email = ? AND password = ?`,
+      [email, password]
+    );
+
+    if (!rows.length) return res.status(401).json({ error: 'Credenciales incorrectas' });
+
+    res.json(rows[0]);
+  } catch (err) {
+    console.error(err);
+    res.status(500).json({ error: 'error en el login' });
   }
 });
 
