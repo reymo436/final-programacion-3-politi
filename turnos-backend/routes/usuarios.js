@@ -1,9 +1,7 @@
-// turnos-backend/routes/usuarios.js
 const express = require('express');
 const router = express.Router();
 const pool = require('../db');
 
-// Listar usuarios (sin password)
 router.get('/', async (req, res) => {
   try {
     const [rows] = await pool.query(
@@ -16,7 +14,6 @@ router.get('/', async (req, res) => {
   }
 });
 
-// Obtener 1 usuario por ID (sin password)
 router.get('/:id', async (req, res) => {
   try {
     const [rows] = await pool.query(
@@ -31,7 +28,6 @@ router.get('/:id', async (req, res) => {
   }
 });
 
-// Crear usuario
 router.post('/', async (req, res) => {
   try {
     const { nombre, email, password } = req.body;
@@ -56,7 +52,6 @@ router.post('/', async (req, res) => {
   }
 });
 
-// Actualizar usuario
 router.put('/:id', async (req, res) => {
   try {
     const { nombre, email, password } = req.body;
@@ -78,7 +73,6 @@ router.put('/:id', async (req, res) => {
   }
 });
 
-// Eliminar usuario
 router.delete('/:id', async (req, res) => {
   try {
     const [result] = await pool.query(
@@ -93,7 +87,6 @@ router.delete('/:id', async (req, res) => {
   }
 });
 
-// 🔑 Login
 router.post('/login', async (req, res) => {
   try {
     const { email, password } = req.body;

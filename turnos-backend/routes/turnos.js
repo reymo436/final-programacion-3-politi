@@ -1,9 +1,7 @@
-// turnos-backend/routes/turnos.js
 const express = require('express');
 const router = express.Router();
 const pool = require('../db');
 
-// Listar todos los turnos
 router.get('/', async (req, res) => {
   try {
     const [rows] = await pool.query(
@@ -19,7 +17,6 @@ router.get('/', async (req, res) => {
   }
 });
 
-// Obtener 1 turno por ID
 router.get('/:id', async (req, res) => {
   try {
     const [rows] = await pool.query(
@@ -36,7 +33,6 @@ router.get('/:id', async (req, res) => {
   }
 });
 
-// Crear un turno
 router.post('/', async (req, res) => {
   try {
     const { nombre_cliente, fecha, hora, servicio, estado, usuario_id } = req.body;
@@ -65,7 +61,6 @@ router.post('/', async (req, res) => {
   }
 });
 
-// Actualizar un turno
 router.put('/:id', async (req, res) => {
   try {
     const { nombre_cliente, fecha, hora, servicio, estado, usuario_id } = req.body;
@@ -92,7 +87,6 @@ router.put('/:id', async (req, res) => {
   }
 });
 
-// Eliminar un turno
 router.delete('/:id', async (req, res) => {
   try {
     const [result] = await pool.query(
