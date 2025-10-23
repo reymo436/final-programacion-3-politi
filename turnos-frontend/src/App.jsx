@@ -1,4 +1,3 @@
-// src/App.jsx
 import { useState, useEffect } from "react";
 import TurnoForm from "./components/TurnoForm";
 import TurnoList from "./components/TurnoList";
@@ -10,13 +9,13 @@ function App() {
   const [turnoEditando, setTurnoEditando] = useState(null);
   const [usuario, setUsuario] = useState(null);
 
-  // 🔹 Cargar usuario desde localStorage al iniciar
+  // Cargar usuario desde localStorage al iniciar
   useEffect(() => {
     const savedUser = localStorage.getItem("usuario");
     if (savedUser) setUsuario(JSON.parse(savedUser));
   }, []);
 
-  // 🔹 Cargar turnos solo si hay usuario logueado
+  // Cargar turnos solo si hay usuario logueado
   useEffect(() => {
     if (usuario) {
       fetch("http://localhost:4000/api/turnos")
@@ -26,20 +25,20 @@ function App() {
     }
   }, [usuario]);
 
-  // 🔹 Login exitoso
+  
   const handleLogin = (user) => {
     setUsuario(user);
     localStorage.setItem("usuario", JSON.stringify(user));
   };
 
-  // 🔹 Cerrar sesión
+  
   const handleLogout = () => {
     setUsuario(null);
     localStorage.removeItem("usuario");
-    setTurnos([]); // limpiar turnos al cerrar sesión
+    setTurnos([]); 
   };
 
-  // 🔹 Agregar turno
+ 
   const handleAddTurno = async (nuevoTurno) => {
     try {
       const response = await fetch("http://localhost:4000/api/turnos", {
@@ -54,7 +53,7 @@ function App() {
     }
   };
 
-  // 🔹 Eliminar turno
+  
   const handleDeleteTurno = async (id) => {
     try {
       await fetch(`http://localhost:4000/api/turnos/${id}`, {
@@ -66,12 +65,12 @@ function App() {
     }
   };
 
-  // 🔹 Iniciar edición
+  
   const handleEditTurno = (turno) => {
     setTurnoEditando(turno);
   };
 
-  // 🔹 Guardar turno editado
+  
   const handleSaveEdit = async (turnoEditado) => {
     try {
       const response = await fetch(
@@ -84,7 +83,7 @@ function App() {
       );
       const updated = await response.json();
       setTurnos(turnos.map((t) => (t.id === updated.id ? updated : t)));
-      setTurnoEditando(null); // cerrar el formulario
+      setTurnoEditando(null);
     } catch (err) {
       console.error("Error al actualizar turno:", err);
     }

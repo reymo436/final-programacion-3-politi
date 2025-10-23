@@ -1,4 +1,3 @@
-// src/components/LoginForm.jsx
 import { useState } from "react";
 
 function LoginForm({ onLogin }) {
@@ -24,7 +23,7 @@ function LoginForm({ onLogin }) {
         return;
       }
 
-      // Guardar usuario en localStorage
+     
       localStorage.setItem("usuario", JSON.stringify(data));
       onLogin(data);
     } catch (err) {

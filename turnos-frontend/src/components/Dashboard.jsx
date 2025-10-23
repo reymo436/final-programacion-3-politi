@@ -7,7 +7,7 @@ function Dashboard({ user, onLogout }) {
   const [turnos, setTurnos] = useState([]);
   const [turnoEditando, setTurnoEditando] = useState(null);
 
-  // Cargar turnos
+ 
   useEffect(() => {
     fetch("http://localhost:4000/api/turnos")
       .then((res) => res.json())
@@ -15,7 +15,7 @@ function Dashboard({ user, onLogout }) {
       .catch((err) => console.error("Error cargando turnos:", err));
   }, []);
 
-  // Agregar turno
+  
   const handleAddTurno = async (nuevoTurno) => {
     try {
       const response = await fetch("http://localhost:4000/api/turnos", {
@@ -30,7 +30,7 @@ function Dashboard({ user, onLogout }) {
     }
   };
 
-  // Eliminar turno
+  
   const handleDeleteTurno = async (id) => {
     try {
       await fetch(`http://localhost:4000/api/turnos/${id}`, {
@@ -42,10 +42,10 @@ function Dashboard({ user, onLogout }) {
     }
   };
 
-  // Editar turno
+  
   const handleEditTurno = (turno) => setTurnoEditando(turno);
 
-  // Guardar edición
+  
   const handleSaveEdit = async (turnoEditado) => {
     try {
       const response = await fetch(
